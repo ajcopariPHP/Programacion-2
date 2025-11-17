@@ -17,7 +17,7 @@ public class Cabina {
     public List<Persona> getPersonas() { return personasAbordo; }
     public int getCantidadPersonas() { return personasAbordo.size(); }
 
-    // intenta agregar persona si no supera limites; retorna true si se pudo
+    // intenta agregar persona si no supera limites; retorna true 
     public boolean agregarPersona(Persona p) {
         if (personasAbordo.size() >= MAX_PERSONAS) return false;
         if ((calcularPesoTotal() + p.getPeso()) > MAX_PESO) return false;

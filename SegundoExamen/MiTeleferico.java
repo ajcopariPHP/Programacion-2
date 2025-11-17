@@ -3,7 +3,7 @@ import java.util.List;
 
 public class MiTeleferico {
     private Linea[] lineas;
-    private float cantidadIngresos; // puede usarse para acumulados si se desea
+    private float cantidadIngresos; 
 
     public MiTeleferico() {
         // Según nota: solo hay 3 líneas: Amarillo, Rojo y Verde (crear con X cabinas iniciales)

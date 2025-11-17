@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Linea {
     private String color;
-    private List<Persona> filaPersonas;       // fila general (si hace falta)
+    private List<Persona> filaPersonas;      
     private List<Cabina> cabinas;
     private int cantidadCabinas;
 
@@ -23,7 +23,7 @@ public class Linea {
         Cabina c = new Cabina(cantidadCabinas);
         cabinas.add(c);
     }
-    // agrega persona a la primera cabina que cumpla requisitos (búsqueda secuencial)
+    // agrega persona a la primera cabina que cumpla requisitos 
     public boolean agregarPersona(Persona p) {
         for (Cabina c : cabinas) {
             if (c.agregarPersona(p)) return true;
@@ -31,7 +31,6 @@ public class Linea {
         return false;
     }
 
-    // método para agregar persona explícitamente a una cabina por nro (si cumple reglas)
     public boolean agregarPersonaACabinaNro(int nroCabina, Persona p) {
         for (Cabina c : cabinas) {
             if (c.getNroCabina() == nroCabina) {
@@ -63,7 +62,6 @@ public class Linea {
         return total;
     }
 
-    // ingreso solo por tarifa regular (edad 25..60 inclusive)
     public float calcularIngresoRegular() {
         float total = 0f;
         for (Cabina c : cabinas) {
