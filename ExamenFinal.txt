@@ -1,0 +1,186 @@
+package Ejercicio2;
+public class Medico {
+    int idMed;
+    String nombreMed;
+    String apellidoMed;
+    int aniosExperiencia;
+
+    public Medico(int idMed, String nombreMed, String apellidoMed, int aniosExperiencia) {
+        this.idMed = idMed;
+        this.nombreMed = nombreMed;
+        this.apellidoMed = apellidoMed;
+        this.aniosExperiencia = aniosExperiencia;
+    }
+ 
+    public String toString() {
+        return idMed + ";" + nombreMed + ";" + apellidoMed + ";" + aniosExperiencia;
+    }
+}
+package Ejercicio2;
+
+public class Consultorio {
+    String consultas;   // nombre del archivo donde se guardan las consultas
+    String medicos;     // archivo donde se guardan los médicos
+
+    public Consultorio() {
+        consultas = "consultas.txt";
+        medicos = "medicos.txt";
+    }
+}
+package Ejercicio2;
+public class Consulta {
+    int ci;
+    String nombrePaciente;
+    String apellidoPaciente;
+    int idMed;
+    int dia;
+    String mes;
+    int anio;
+
+    public Consulta(int ci, String nombrePaciente, String apellidoPaciente,
+                    int idMed, int dia, String mes, int anio) {
+        this.ci = ci;
+        this.nombrePaciente = nombrePaciente;
+        this.apellidoPaciente = apellidoPaciente;
+        this.idMed = idMed;
+        this.dia = dia;
+        this.mes = mes;
+        this.anio = anio;
+    }
+
+    
+    public String toString() {
+        return ci + ";" + nombrePaciente + ";" + apellidoPaciente + ";" +
+               idMed + ";" + dia + ";" + mes + ";" + anio;
+    }
+}
+package Ejercicio2;
+import java.io.*;
+import java.util.*;
+
+public class AppMain {
+
+    static String ARCHIVO_MED = "medicos.txt";
+    static String ARCHIVO_CONS = "consultas.txt";
+
+    public static void main(String[] args) throws Exception {
+    	System.out.println("Hola");
+        
+        altaMedico(new Medico(1, "Juan", "Perez", 5));
+        altaMedico(new Medico(2, "Luis", "Lopez", 7));
+        altaMedico(new Medico(3, "Ana", "Vega", 10));
+
+        altaConsulta(new Consulta(123, "Mario", "Santos", 1, 25, "Diciembre", 2024));
+        altaConsulta(new Consulta(111, "Roberto", "Luna", 2, 24, "Diciembre", 2024));
+        altaConsulta(new Consulta(444, "Jose", "Campos", 3, 31, "Diciembre", 2024));
+        
+    }
+
+    // a)
+    static void altaMedico(Medico m) throws Exception {
+        FileWriter fw = new FileWriter(ARCHIVO_MED, true);
+        fw.write(m.toString() + "\n");
+        fw.close();
+    }
+
+    //dar de alta
+    static void altaConsulta(Consulta c) throws Exception {
+        FileWriter fw = new FileWriter(ARCHIVO_CONS, true);
+        fw.write(c.toString() + "\n");
+        fw.close();
+    }
+
+    // b)
+    static void bajaMedico(String nombre, String apellido) throws Exception {
+        File input = new File(ARCHIVO_MED);
+        File temp = new File("temp.txt");
+
+        BufferedReader br = new BufferedReader(new FileReader(input));
+        PrintWriter pw = new PrintWriter(new FileWriter(temp));
+
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] p = linea.split(";");
+            if (!(p[1].equals(nombre) && p[2].equals(apellido))) {
+                pw.println(linea);
+            }
+        }
+        br.close();
+        pw.close();
+
+        input.delete();
+        temp.renameTo(input);
+
+        bajaConsultasPorMedico(nombre, apellido);
+    }
+
+    static void bajaConsultasPorMedico(String nombre, String apellido) throws Exception {
+        // idMed del doctor eliminado
+        int id = obtenerIdMedico(nombre, apellido);
+        if (id == -1) return;
+
+        File input = new File(ARCHIVO_CONS);
+        File temp = new File("temp2.txt");
+
+        BufferedReader br = new BufferedReader(new FileReader(input));
+        PrintWriter pw = new PrintWriter(new FileWriter(temp));
+
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] p = linea.split(";");
+            if (Integer.parseInt(p[3]) != id) {
+                pw.println(linea);
+            }
+        }
+        br.close();
+        pw.close();
+
+        input.delete();
+        temp.renameTo(input);
+    }
+
+    static int obtenerIdMedico(String nombre, String apellido) throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_MED));
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] p = linea.split(";");
+            if (p[1].equals(nombre) && p[2].equals(apellido)) {
+                br.close();
+                return Integer.parseInt(p[0]);
+            }
+        }
+        br.close();
+        return -1;
+    }
+
+    // c) 
+    static void cambiarConsultasNavidad() throws Exception {
+        File input = new File(ARCHIVO_CONS);
+        File temp = new File("temp3.txt");
+
+        BufferedReader br = new BufferedReader(new FileReader(input));
+        PrintWriter pw = new PrintWriter(new FileWriter(temp));
+
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] p = linea.split(";");
+
+            int dia = Integer.parseInt(p[4]);
+            String mes = p[5];
+
+            if ((dia == 25 && mes.equals("Diciembre")) ||
+                (dia == 1 && mes.equals("Enero"))) {
+
+                p[4] = "2"; // Cambiar día al 2
+                linea = String.join(";", p);
+            }
+
+            pw.println(linea);
+        }
+        br.close();
+        pw.close();
+
+        input.delete();
+        temp.renameTo(input);
+    }
+}
