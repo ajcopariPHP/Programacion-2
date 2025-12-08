@@ -1,0 +1,154 @@
+public class Medico {
+    private int idMed;
+    private String nombreMed;
+    private String apellidoMed;
+    private int aniosExperiencia;
+
+    public Medico(int idMed, String nombreMed, String apellidoMed, int aniosExperiencia) {
+        this.idMed = idMed;
+        this.nombreMed = nombreMed;
+        this.apellidoMed = apellidoMed;
+        this.aniosExperiencia = aniosExperiencia;
+    }
+
+    public int getIdMed() { return idMed; }
+    public String getNombreMed() { return nombreMed; }
+    public String getApellidoMed() { return apellidoMed; }
+}
+import java.util.ArrayList;
+
+public class Consultorio {
+    private ArrayList<Consulta> consultas = new ArrayList<>();
+    private ArrayList<Medico> medicos = new ArrayList<>();
+
+    public ArrayList<Consulta> getConsultas() { return consultas; }
+    public ArrayList<Medico> getMedicos() { return medicos; }
+
+    public void agregarMedico(Medico m) {
+        medicos.add(m);
+    }
+
+    public void agregarConsulta(Consulta c) {
+        consultas.add(c);
+    }
+}
+public class Consulta {
+    private int ci;
+    private String nombrePaciente;
+    private String apellidoPaciente;
+    private int idMed;
+    private int dia;
+    private String mes;
+    private int anio;
+
+    public Consulta(int ci, String nombrePaciente, String apellidoPaciente,
+                    int idMed, int dia, String mes, int anio) {
+
+        this.ci = ci;
+        this.nombrePaciente = nombrePaciente;
+        this.apellidoPaciente = apellidoPaciente;
+        this.idMed = idMed;
+        this.dia = dia;
+        this.mes = mes;
+        this.anio = anio;
+    }
+
+    public int getIdMed() { return idMed; }
+    public int getDia() { return dia; }
+    public String getMes() { return mes; }
+    public int getAnio() { return anio; }
+
+    public void setDia(int nuevoDia) { this.dia = nuevoDia; }
+}
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+public class ArchivoJSON {
+
+    private static final Gson gson = new Gson();
+
+    public static <T> void guardar(String archivo, ArrayList<T> lista) {
+        try (FileWriter writer = new FileWriter(archivo)) {
+            gson.toJson(lista, writer);
+        } catch (Exception e) {
+            System.out.println("Error al guardar: " + e.getMessage());
+        }
+    }
+
+    public static <T> ArrayList<T> cargar(String archivo, Class<T> clase) {
+        try (FileReader reader = new FileReader(archivo)) {
+            return gson.fromJson(reader, TypeToken.getParameterized(ArrayList.class, clase).getType());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+}
+import java.util.ArrayList;
+
+public class AppMain {
+
+    public static void main(String[] args) {
+
+        Consultorio sistema = new Consultorio();
+
+        // a) 
+        Medico m1 = new Medico(1, "Juan", "Perez", 10);
+        Medico m2 = new Medico(2, "Maria", "Gomez", 5);
+        Medico m3 = new Medico(3, "Luis", "Lopez", 8);
+
+        sistema.agregarMedico(m1);
+        sistema.agregarMedico(m2);
+        sistema.agregarMedico(m3);
+        sistema.agregarConsulta(new Consulta(111, "Carlos", "Rojas", 1, 25, "Diciembre", 2024));
+        sistema.agregarConsulta(new Consulta(222, "Ana", "Vargas", 2, 24, "Diciembre", 2024));
+        sistema.agregarConsulta(new Consulta(333, "Pedro", "Mendez", 3, 31, "Diciembre", 2024));
+
+        sistema.agregarConsulta(new Consulta(444, "Luis", "Flores", 1, 1, "Enero", 2024));
+        sistema.agregarConsulta(new Consulta(555, "Carmen", "Paz", 2, 5, "Enero", 2024));
+        sistema.agregarConsulta(new Consulta(666, "Julia", "Cortez", 3, 31, "Diciembre", 2024));
+
+        sistema.agregarConsulta(new Consulta(777, "Jorge", "Mamani", 1, 25, "Diciembre", 2024));
+        sistema.agregarConsulta(new Consulta(888, "Elena", "Quispe", 2, 1, "Enero", 2024));
+        sistema.agregarConsulta(new Consulta(999, "Rocio", "Vega", 3, 5, "Enero", 2024));
+
+        ArchivoJSON.guardar("medicos.json", sistema.getMedicos());
+        ArchivoJSON.guardar("consultas.json", sistema.getConsultas());
+        // b) 
+        String nombreX = "Maria";
+        String apellidoY = "Gomez";
+
+        sistema.getMedicos().removeIf(m ->
+                m.getNombreMed().equals(nombreX) &&
+                m.getApellidoMed().equals(apellidoY));
+
+        sistema.getConsultas().removeIf(c ->
+                c.getIdMed() == 2); // médico eliminado
+
+
+        // c) 
+        for (Consulta c : sistema.getConsultas()) {
+            if ((c.getDia() == 25 && c.getMes().equals("Diciembre")) ||
+                (c.getDia() == 1 && c.getMes().equals("Enero"))) {
+
+                c.setDia(15); // nuevo día
+            }
+        }
+
+        // d)       
+
+        int cumpleDia = 5;
+        String cumpleMes = "Enero";
+
+        System.out.println("Pacientes atendidos en tu cumpleaños:");
+        for (Consulta c : sistema.getConsultas()) {
+            if (c.getDia() == cumpleDia && c.getMes().equals(cumpleMes)) {
+                System.out.println(c.getNombrePaciente() + " " + c.getApellidoPaciente());
+            }
+        }
+        ArchivoJSON.guardar("medicos.json", sistema.getMedicos());
+        ArchivoJSON.guardar("consultas.json", sistema.getConsultas());
+    }
+}
